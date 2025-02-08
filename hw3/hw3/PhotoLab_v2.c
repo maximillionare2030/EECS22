@@ -8,7 +8,7 @@
 #include <string.h>
 #include <time.h>
 
-#define SLEN 80					/* maximum length of file names and string*/
+#define SLEN 80					/* maximum length of file names and string  Yes*/
 
 static const int WIDTH=512; 			/* image width */
 static const int HEIGHT=288; 			/* image height */
@@ -581,26 +581,26 @@ void AutoTest(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], un
 	strcpy(sname, "shuffle");
 	SaveImage(sname, R, G, B);
 	printf("Shuffle tested!\n\n");
-	
+
 	/*
 	LoadImage(fname, R, G, B);
 	FishEye(R, G, B, 0.5, 2.0);
 	strcpy(sname, "fisheye");
 	SaveImage(sname, R, G, B);
 	printf("Fisheye tested!\n\n");
-	
+
 	LoadImage(fname, R, G, B);
 	Posterize(R, G, B, 7, 7, 7) ;
 	strcpy(sname, "posterize");
 	SaveImage(sname, R, G, B);
 	printf("Posterize tested!\n\n");
-	
+
 	LoadImage(fname, R, G, B);
 	Rotate(R, G, B, 22, 0.78, 110, 220);
 	strcpy(sname, "rotate");
 	SaveImage(sname, R, G, B);
 	printf("Rotate tested!\n\n");
-	
+
 	LoadImage(fname, R, G, B);
 	MotionBlur(40, R, G, B) ;
 	strcpy(sname, "blur");
