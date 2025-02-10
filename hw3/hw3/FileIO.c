@@ -2,6 +2,8 @@
 /* Load Image and SaveImage function definitions*/
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "Constants.h"
 #include "FileIO.h"
 
