@@ -10,7 +10,6 @@
 #include "FileIO.h"
 #include "DIPS.h"
 #include "Advanced.h"
-#define DEBUG
 
 void PrintMenu() {
 	printf("\n----------------------------\n");
@@ -23,9 +22,13 @@ void PrintMenu() {
 	printf(" 7: Shuffle an image\n");
 	printf(" 8: Flip an image vertically\n");
 	printf(" 9: Mirror an image horizontally\n");
-	printf("10: Add border to an image\n");
-	printf("11: Test all functions\n");
-	printf("12: Exit\n");
+	printf("10: Pixelate the image\n");
+	printf("11: Create a fisheye image\n");
+	printf("12: Posterize an image\n");
+	printf("13: Rotate and zoom an image\n");
+	printf("14: Motion Blur\n");
+	printf("15: Test all functions\n");
+	printf("16: Exit\n");
 }
 
 void AutoTest(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], unsigned char B[WIDTH][HEIGHT]) {
@@ -135,7 +138,7 @@ int main() {
 			r24 = LoadImage(fname, R, G, B);
 		}
 		/* menu item 2 - 10 requires image is loaded first */
-		else if (option >= 2 && option <= 10) {
+		else if (option >= 2 && option <= 14) {
 			if (r24 != SUCCESS)	 {
 				printf("No image is read.\n");
 			}
@@ -189,21 +192,45 @@ int main() {
 						HMirror(R, G, B);
 						printf("\"HMirror\" operation is done!\n");
 						break;
-					case 10:
-						printf("Enter border width:");
-						scanf("%d", &border_width);
-						printf("Available border colors : black, white, red, green, blue, yellow, cyan, pink, orange\n");
-						printf("Select border color from the options: ");
-						scanf("%s",colorOption);
-						AddBorder(R, G, B, colorOption, border_width);
-						printf("\"Border\" operation is done!\n");
+					case 10: {
+						int block_size;
+						printf("Enter the block size: ");
+						scanf("%d", &block_size);
+						Pixelate(R, G, B, block_size);
+						printf("\"Pixelate\" operation is done!\n");
 						break;
+					}
+					case 11: {
+						double base_factor, k, scaling_factor;
+						printf("Enter a value for base factor: ");
+						scanf("%lf", &base_factor);
+						printf("Enter a value for k: ");
+						scanf("%lf", &k);
+						printf("Enter a value for scaling factor: ");
+						scanf("%lf", &scaling_factor);
+						FishEye(R, G, B, base_factor, k, scaling_factor);
+						printf("\"Fisheye\" operation is done!\n");
+						break;
+					}
+
+					case 12: {
+						int rbits, gbits, bbits;
+						printf("Enter number of posterization bits for R channel (1 to 8): ");
+						scanf("%d", &rbits);
+						printf("Enter number of posterization bits for G channel (1 to 8): ");
+						scanf("%d", &gbits);
+						printf("Enter number of posterization bits for B channel (1 to 8): ");
+						scanf("%d", &bbits);
+						Posterize(R, G, B, rbits, gbits, bbits);
+						printf("\"Posterize\" operation is done!\n");
+						break;
+					}
 					default:
 						break;
 				}
 			}
 		}
-		else if (option == 11) {
+		else if (option == 15) {
 			AutoTest(R, G, B);
 			r24 = SUCCESS;	/* set returned code SUCCESS, since image is loaded */
 		}
