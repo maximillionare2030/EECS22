@@ -73,12 +73,85 @@ void Posterize(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], u
      */
     for (int y = 0; y < HEIGHT; y++){
         for (int x = 0; x < WIDTH; x++){
-            R[x][y] = R[x][y] & (~((1 << rbits) - 1)) | ((1 << (rbits -1)) -1);
-            G[x][y] = G[x][y] & (~((1 << gbits) - 1)) | ((1 << (gbits -1)) -1);
-            B[x][y] = B[x][y] & (~((1 << bbits) - 1)) | ((1 << (bbits -1)) -1);
+            R[x][y] = (R[x][y] & (~((1 << rbits) - 1))) | ((1 << (rbits -1)) -1);
+            G[x][y] = (G[x][y] & (~((1 << gbits) - 1))) | ((1 << (gbits -1)) -1);
+            B[x][y] = (B[x][y] & (~((1 << bbits) - 1))) | ((1 << (bbits -1)) -1);
+        }
+    }
+}
+
+void Rotate(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], unsigned char B[WIDTH][HEIGHT], double Angle, double ScaleFactor, int CenterX, int CenterY) {
+    double theta = -Angle * 2 * PI / 360.0;
+    unsigned char R_temp[WIDTH][HEIGHT], G_temp[WIDTH][HEIGHT], B_temp[WIDTH][HEIGHT];
+
+
+
+    // Copy original image to temp arrays
+    for (int y = 0; y < HEIGHT; y++){
+        for (int x = 0; x < WIDTH; x++){
+            R_temp[x][y] = R[x][y];
+            G_temp[x][y] = G[x][y];
+            B_temp[x][y] = B[x][y];
+        }
+    }
+    // Create new image
+    for (int y = 0; y < HEIGHT; y++) {
+        for (int x = 0; x < WIDTH; x++) {
+            int new_x, new_y;
+            new_x = (int)(((cos(theta) / ScaleFactor) * (x - CenterX)) - ((sin(theta) / ScaleFactor) * (y - CenterY)) + CenterX);
+            new_y = (int)(((sin(theta) / ScaleFactor) * (x - CenterX)) + ((cos(theta) / ScaleFactor) * (y - CenterY)) + CenterY);
+
+            if (new_x >= 0 && new_x < WIDTH && new_y >=  0 && new_y < HEIGHT) {
+                R[x][y] = R_temp[new_x][new_y];
+                G[x][y] = G_temp[new_x][new_y];
+                B[x][y] = B_temp[new_x][new_y];
+            }
+
+            else {
+                // Set to black
+                R[x][y] = 0;
+                G[x][y] = 0;
+                B[x][y] = 0;
+            }
+        }
+    }
+}
+
+void MotionBlur(int BlurAmount,unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], unsigned char B[WIDTH][HEIGHT]) {
+    unsigned char R_temp[WIDTH][HEIGHT], G_temp[WIDTH][HEIGHT], B_temp[WIDTH][HEIGHT];
+
+    // Copy original image to temp arrays
+    for (int y = 0; y < HEIGHT; y++) {
+        for (int x = 0; x < WIDTH; x++) {
+            R_temp[x][y] = R[x][y];
+            G_temp[x][y] = G[x][y];
+            B_temp[x][y] = B[x][y];
         }
     }
 
+    // Apply horizontal motion blur
+    for (int y = 0; y < HEIGHT; y++) {
+        for (int x = 0; x < WIDTH; x++) {
+            double sumR = R_temp[x][y] * 0.5; // 50% weight for the original pixel
+            double sumG = G_temp[x][y] * 0.5;
+            double sumB = B_temp[x][y] * 0.5;
+            double totalWeight = 0.5; // Start with the original pixel's weight
 
+            int availablePixels = (x + BlurAmount <= WIDTH) ? BlurAmount : (WIDTH - 1 - x); // Adjust for edge cases
+
+            for (int i = 1; i <= availablePixels; i++) {
+                double weight = 0.5 / availablePixels;  // Adjust remaining 50% weight based on available pixels
+                sumR += R_temp[x + i][y] * weight;
+                sumG += G_temp[x + i][y] * weight;
+                sumB += B_temp[x + i][y] * weight;
+                totalWeight += weight;
+            }
+
+            // Assign the weighted values TODO: Fix?? idk
+            R[x][y] = (unsigned char)(sumR / totalWeight);
+            G[x][y] = (unsigned char)(sumG / totalWeight);
+            B[x][y] = (unsigned char)(sumB / totalWeight);
+        }
+    }
 }
 

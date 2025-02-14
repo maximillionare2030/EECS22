@@ -42,7 +42,7 @@ void AutoTest(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], un
 	printf("Negative tested!\n\n");
 
 	LoadImage(fname, R, G, B);
-	ColorFilter(R, G, B, 250, 250, 250, 60, 0, 0, 255);
+	ColorFilter(R, G, B, 130, 130, 150, 30, 0, 255, 255);
 	strcpy(sname, "colorfilter");
 	SaveImage(sname, R, G, B);
 	printf("Color Filter tested!\n\n");
@@ -60,10 +60,10 @@ void AutoTest(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], un
 	printf("HMirror tested!\n\n");
 
 	LoadImage(fname, R, G, B);
-	AddBorder (R, G, B, "orange", 32);
-	strcpy(sname, "border");
+	Pixelate (R, G, B, 4);
+	strcpy(sname, "pixelate");
 	SaveImage(sname, R, G, B);
-	printf("Border tested!\n\n");
+	printf("Border Pixelate!\n\n");
 
 	LoadImage(fname, R, G, B);
 	BlackNWhite(R, G, B);
@@ -83,9 +83,8 @@ void AutoTest(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], un
 	SaveImage(sname, R, G, B);
 	printf("Shuffle tested!\n\n");
 
-	/*
 	LoadImage(fname, R, G, B);
-	FishEye(R, G, B, 0.5, 2.0);
+	FishEye(R, G, B, 0.5, 0.5, 1.5);
 	strcpy(sname, "fisheye");
 	SaveImage(sname, R, G, B);
 	printf("Fisheye tested!\n\n");
@@ -107,7 +106,6 @@ void AutoTest(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], un
 	strcpy(sname, "blur");
 	SaveImage(sname, R, G, B);
 	printf("MotionBlur tested!\n\n");
-	*/
 }
 
 
@@ -212,7 +210,6 @@ int main() {
 						printf("\"Fisheye\" operation is done!\n");
 						break;
 					}
-
 					case 12: {
 						int rbits, gbits, bbits;
 						printf("Enter number of posterization bits for R channel (1 to 8): ");
@@ -225,6 +222,30 @@ int main() {
 						printf("\"Posterize\" operation is done!\n");
 						break;
 					}
+					case 13: {
+						double Angle, ScaleFactor;
+						int CenterX, CenterY;
+						printf("Enter the angle of rotation: ");
+						scanf("%lf", &Angle);
+						printf("Enter the scale of zooming: ");
+						scanf("%lf", &ScaleFactor);
+						printf("Enter the X-axis coordinate of the center of rotation: ");
+						scanf("%d", &CenterX);
+						printf("Enter the Y-axis coordinate of the center of rotation: ");
+						scanf("%d", &CenterY);
+						Rotate(R, G, B, Angle, ScaleFactor, CenterX, CenterY);
+						printf("\"Rotate\" operation is done!\n");
+						break;
+					}
+					case 14: {
+						int BlurAmount;
+						printf("Please input blur amount: ");
+						scanf("%d", &BlurAmount);
+						MotionBlur(BlurAmount, R, G, B);
+						printf("\"Motion Blur\" operation is done!\n");
+						break;
+					}
+
 					default:
 						break;
 				}
