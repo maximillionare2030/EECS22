@@ -60,7 +60,7 @@ void FishEye(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], uns
     }
 }
 
-void Posterize(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], unsigned char B[WIDTH][HEIGHT], int rbits, int gbits, int bbits) {
+void Posterize(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], unsigned char B[WIDTH][HEIGHT], unsigned int rbits,unsigned int gbits,unsigned int bbits) {
     /**
      * @brief Posterizes the image by reducing the number of bits for each color channel.
      *

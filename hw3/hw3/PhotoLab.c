@@ -11,123 +11,45 @@
 #include "DIPS.h"
 #include "Advanced.h"
 
-void PrintMenu() {
-	printf("\n----------------------------\n");
-	printf(" 1: Load a PPM image\n");
-	printf(" 2: Save an image in PPM and JPEG format\n");
-	printf(" 3: Change a color image to Black & White\n");
-	printf(" 4: Make a negative of an image\n");
-	printf(" 5: Color filter an image\n");
-	printf(" 6: Sketch the edge of an image\n");
-	printf(" 7: Shuffle an image\n");
-	printf(" 8: Flip an image vertically\n");
-	printf(" 9: Mirror an image horizontally\n");
-	printf("10: Pixelate the image\n");
-	printf("11: Create a fisheye image\n");
-	printf("12: Posterize an image\n");
-	printf("13: Rotate and zoom an image\n");
-	printf("14: Motion Blur\n");
-	printf("15: Test all functions\n");
-	printf("16: Exit\n");
-}
 
-void AutoTest(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], unsigned char B[WIDTH][HEIGHT]) {
-	char fname[SLEN] = "EngPlaza";
-	char sname[SLEN];
 
-	LoadImage(fname, R, G, B);
-	Negative(R, G, B);
-	strcpy(sname, "negative");
-	SaveImage(sname, R, G, B);
-	printf("Negative tested!\n\n");
-
-	LoadImage(fname, R, G, B);
-	ColorFilter(R, G, B, 130, 130, 150, 30, 0, 255, 255);
-	strcpy(sname, "colorfilter");
-	SaveImage(sname, R, G, B);
-	printf("Color Filter tested!\n\n");
-
-	LoadImage(fname, R, G, B);
-	Edge(R, G, B);
-	strcpy(sname, "edge");
-	SaveImage(sname, R, G, B);
-	printf("Edge Detection tested!\n\n");
-
-	LoadImage(fname, R, G, B);
-	HMirror(R, G, B);
-	strcpy(sname, "hmirror");
-	SaveImage(sname, R, G, B);
-	printf("HMirror tested!\n\n");
-
-	LoadImage(fname, R, G, B);
-	Pixelate (R, G, B, 4);
-	strcpy(sname, "pixelate");
-	SaveImage(sname, R, G, B);
-	printf("Border Pixelate!\n\n");
-
-	LoadImage(fname, R, G, B);
-	BlackNWhite(R, G, B);
-	strcpy(sname, "bw");
-	SaveImage(sname, R, G, B);
-	printf("Black & White tested!\n\n");
-
-	LoadImage(fname, R, G, B);
-	VFlip(R, G, B);
-	strcpy(sname, "vflip");
-	SaveImage(sname, R, G, B);
-	printf("HFlip tested!\n\n");
-
-	LoadImage(fname, R, G, B);
-	Shuffle(R, G, B);
-	strcpy(sname, "shuffle");
-	SaveImage(sname, R, G, B);
-	printf("Shuffle tested!\n\n");
-
-	LoadImage(fname, R, G, B);
-	FishEye(R, G, B, 0.5, 0.5, 1.5);
-	strcpy(sname, "fisheye");
-	SaveImage(sname, R, G, B);
-	printf("Fisheye tested!\n\n");
-
-	LoadImage(fname, R, G, B);
-	Posterize(R, G, B, 7, 7, 7) ;
-	strcpy(sname, "posterize");
-	SaveImage(sname, R, G, B);
-	printf("Posterize tested!\n\n");
-
-	LoadImage(fname, R, G, B);
-	Rotate(R, G, B, 22, 0.78, 110, 220);
-	strcpy(sname, "rotate");
-	SaveImage(sname, R, G, B);
-	printf("Rotate tested!\n\n");
-
-	LoadImage(fname, R, G, B);
-	MotionBlur(40, R, G, B) ;
-	strcpy(sname, "blur");
-	SaveImage(sname, R, G, B);
-	printf("MotionBlur tested!\n\n");
-}
-
+void PrintMenu();
+void AutoTest(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], unsigned char B[WIDTH][HEIGHT]);
 
 int main() {
+
 	unsigned char   R[WIDTH][HEIGHT];	/* use three 2-D arrays to store R, G, B components */
 	unsigned char   G[WIDTH][HEIGHT];
 	unsigned char   B[WIDTH][HEIGHT];
 
+	#ifdef DEBUG
+	AutoTest(R, G, B);
+	#endif
+
+	#ifndef DEBUG
 	int option;			/* user input option */
 	char fname[SLEN];		/* input file name */
-	char colorOption[SLEN];
 
 	PrintMenu();
 	printf("Please make your choice: ");
 	scanf("%d", &option);
 
-	int r24 = -1;			/* return code of LoadImage() */
+	int r24 = -1;                   /* return code of LoadImage() */
 	/* ColorFilter() parameters */
 	int target_r, target_g, target_b, threshold;
 	double factor_r, factor_g, factor_b;
-	/* AddBorder() parameter */
-	int border_width;
+	/* Pixelate() parameter */
+	int block_size;
+	/* Fisheye() parameters */
+	double base_factor, k, scaling_factor;
+	/* Posterize() parameters */
+	int rbits, gbits, bbits;
+	/* Rotate() parameters */
+	double Angle, ScaleFactor;
+	int CenterX, CenterY;
+	/* MotionBlur() parameters */
+	int BlurAmount;
+
 
 	while (option != EXIT) {
 		if (option == 1) {
@@ -191,7 +113,6 @@ int main() {
 						printf("\"HMirror\" operation is done!\n");
 						break;
 					case 10: {
-						int block_size;
 						printf("Enter the block size: ");
 						scanf("%d", &block_size);
 						Pixelate(R, G, B, block_size);
@@ -199,7 +120,6 @@ int main() {
 						break;
 					}
 					case 11: {
-						double base_factor, k, scaling_factor;
 						printf("Enter a value for base factor: ");
 						scanf("%lf", &base_factor);
 						printf("Enter a value for k: ");
@@ -211,7 +131,6 @@ int main() {
 						break;
 					}
 					case 12: {
-						int rbits, gbits, bbits;
 						printf("Enter number of posterization bits for R channel (1 to 8): ");
 						scanf("%d", &rbits);
 						printf("Enter number of posterization bits for G channel (1 to 8): ");
@@ -223,8 +142,7 @@ int main() {
 						break;
 					}
 					case 13: {
-						double Angle, ScaleFactor;
-						int CenterX, CenterY;
+
 						printf("Enter the angle of rotation: ");
 						scanf("%lf", &Angle);
 						printf("Enter the scale of zooming: ");
@@ -238,11 +156,10 @@ int main() {
 						break;
 					}
 					case 14: {
-						int BlurAmount;
 						printf("Please input blur amount: ");
 						scanf("%d", &BlurAmount);
 						MotionBlur(BlurAmount, R, G, B);
-						printf("\"Motion Blur\" operation is done!\n");
+						printf("\"motion blur\" operation is done!\n");
 						break;
 					}
 
@@ -265,5 +182,134 @@ int main() {
 		scanf("%d", &option);
 	}
 	printf("You exit the program.\n");
+	#endif
+
+
+
+
 	return 0;
+}
+
+
+void PrintMenu() {
+	printf("\n----------------------------\n");
+	printf(" 1: Load a PPM image\n");
+	printf(" 2: Save an image in PPM and JPEG format\n");
+	printf(" 3: Change a color image to Black & White\n");
+	printf(" 4: Make a negative of an image\n");
+	printf(" 5: Color filter an image\n");
+	printf(" 6: Sketch the edge of an image\n");
+	printf(" 7: Shuffle an image\n");
+	printf(" 8: Flip an image vertically\n");
+	printf(" 9: Mirror an image horizontally\n");
+	printf("10: Pixelate the image\n");
+	printf("11: Create a fisheye image\n");
+	printf("12: Posterize an image\n");
+	printf("13: Rotate and zoom an image\n");
+	printf("14: Motion Blur\n");
+	printf("15: Test all functions\n");
+	printf("16: Exit\n");
+}
+
+void AutoTest(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], unsigned char B[WIDTH][HEIGHT]) {
+	char fname[SLEN] = "EngPlaza";
+	char sname[SLEN];
+
+
+	LoadImage(fname, R, G, B);
+	Negative(R, G, B);
+	strcpy(sname, "negative");
+	SaveImage(sname, R, G, B);
+	#ifdef DEBUG
+	printf("Negative tested!\n\n");
+	#endif
+
+	LoadImage(fname, R, G, B);
+	ColorFilter(R, G, B, 130, 130, 150, 30, 0, 255, 255);
+	strcpy(sname, "colorfilter");
+	SaveImage(sname, R, G, B);
+	#ifdef DEBUG
+	printf("Color Filter tested!\n\n");
+	#endif
+
+	LoadImage(fname, R, G, B);
+	Edge(R, G, B);
+	strcpy(sname, "edge");
+	SaveImage(sname, R, G, B);
+	#ifdef DEBUG
+	printf("Edge Detection tested!\n\n");
+	#endif
+
+	LoadImage(fname, R, G, B);
+	HMirror(R, G, B);
+	strcpy(sname, "hmirror");
+	SaveImage(sname, R, G, B);
+	#ifdef DEBUG
+	printf("HMirror tested!\n\n");
+	#endif
+
+	LoadImage(fname, R, G, B);
+	Pixelate (R, G, B, 4);
+	strcpy(sname, "pixelate");
+	SaveImage(sname, R, G, B);
+	#ifdef DEBUG
+	printf("Pixelate tested!\n\n");
+	#endif
+
+	LoadImage(fname, R, G, B);
+	BlackNWhite(R, G, B);
+	strcpy(sname, "bw");
+	SaveImage(sname, R, G, B);
+	#ifdef DEBUG
+	printf("Black & White tested!\n\n");
+	#endif
+
+	LoadImage(fname, R, G, B);
+	VFlip(R, G, B);
+	strcpy(sname, "vflip");
+	SaveImage(sname, R, G, B);
+	#ifdef DEBUG
+	printf("VFlip tested!\n\n");
+	#endif
+
+	LoadImage(fname, R, G, B);
+	Shuffle(R, G, B);
+	strcpy(sname, "shuffle");
+	SaveImage(sname, R, G, B);
+	#ifdef DEBUG
+	printf("Shuffle tested!\n\n");
+	#endif
+
+	LoadImage(fname, R, G, B);
+	FishEye(R, G, B, 0.5, 0.5, 1.5);
+	strcpy(sname, "fisheye");
+	SaveImage(sname, R, G, B);
+	#ifdef DEBUG
+	printf("Fisheye tested!\n\n");
+	#endif
+
+	LoadImage(fname, R, G, B);
+	Posterize(R, G, B, 7, 7, 7) ;
+	strcpy(sname, "posterize");
+	SaveImage(sname, R, G, B);
+	#ifdef DEBUG
+	printf("Posterize tested!\n\n");
+	#endif
+
+	LoadImage(fname, R, G, B);
+	Rotate(R, G, B, 22, 0.78, 110, 220);
+	strcpy(sname, "rotate");
+	SaveImage(sname, R, G, B);
+	#ifdef DEBUG
+	printf("Rotate tested!\n\n");
+	#endif
+
+	LoadImage(fname, R, G, B);
+	MotionBlur(40, R, G, B) ;
+	strcpy(sname, "blur");
+	SaveImage(sname, R, G, B);
+	#ifdef DEBUG
+	printf("MotionBlur tested!\n\n");
+	#endif
+
 }

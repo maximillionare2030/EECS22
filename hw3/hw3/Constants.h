@@ -3,7 +3,7 @@
 /* Header file in which the constants to be used are defined */
 
 #define SLEN 80					/* maximum length of file names and string*/
-#define PI 3.14159265358979323846	/* value of PI */
+#define PI 3.1415925	/* value of PI */
 
 static const int WIDTH=512; 			/* image width */
 static const int HEIGHT=288; 			/* image height */
