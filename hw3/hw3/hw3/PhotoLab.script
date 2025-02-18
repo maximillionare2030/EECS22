@@ -1,0 +1,189 @@
+Script started on 2025-02-17 18:22:11-08:00
+]0;maximitt@crystalcove:hw3[maximitt@crystalcove hw3]$ make clean
+rm -f *.o
+rm -f *.a
+rm -f PhotoLab
+rm -f PhotoLabTest
+]0;maximitt@crystalcove:hw3[maximitt@crystalcove hw3]$ make
+gcc -Wall -std=c11 -c PhotoLab.c -o PhotoLab.o
+gcc -Wall -std=c11 -c FileIO.c -o FileIO.o
+gcc -Wall -std=c11 -c DIPs.c -o DIPs.o
+gcc -Wall -std=c11 -c Advanced.c -o Advanced.o
+ar rc libFilter.a DIPs.o Advanced.o
+ranlib libFilter.a
+gcc PhotoLab.o FileIO.o -L. -lFilter -lm -o PhotoLab
+gcc -Wall -DDEBUG -std=c11 -c PhotoLab.c -o PhotoLabTest.o
+gcc -g PhotoLabTest.o FileIO.o -L. -lFilter -lm -o PhotoLabTest
+]0;maximitt@crystalcove:hw3[maximitt@crystalcove hw3]$ ./PhotoLab
+
+----------------------------
+ 1: Load a PPM image
+ 2: Save an image in PPM and JPEG format
+ 3: Change a color image to Black & White
+ 4: Make a negative of an image
+ 5: Color filter an image
+ 6: Sketch the edge of an image
+ 7: Shuffle an image
+ 8: Flip an image vertically
+ 9: Mirror an image horizontally
+10: Pixelate the image
+11: Create a fisheye image
+12: Posterize an image
+13: Rotate and zoom an image
+14: Motion Blur
+15: Test all functions
+16: Exit
+Please make your choice: 15
+EngPlaza.ppm was read.
+negative.ppm was saved. 
+0 mismatching pixels (0.000%) identified in negative_diff.ppm.
+negative.jpg was stored.
+EngPlaza.ppm was read.
+colorfilter.ppm was saved. 
+0 mismatching pixels (0.000%) identified in colorfilter_diff.ppm.
+colorfilter.jpg was stored.
+EngPlaza.ppm was read.
+edge.ppm was saved. 
+0 mismatching pixels (0.000%) identified in edge_diff.ppm.
+edge.jpg was stored.
+EngPlaza.ppm was read.
+hmirror.ppm was saved. 
+0 mismatching pixels (0.000%) identified in hmirror_diff.ppm.
+hmirror.jpg was stored.
+EngPlaza.ppm was read.
+pixelate.ppm was saved. 
+0 mismatching pixels (0.000%) identified in pixelate_diff.ppm.
+pixelate.jpg was stored.
+EngPlaza.ppm was read.
+bw.ppm was saved. 
+0 mismatching pixels (0.000%) identified in bw_diff.ppm.
+bw.jpg was stored.
+EngPlaza.ppm was read.
+vflip.ppm was saved. 
+0 mismatching pixels (0.000%) identified in vflip_diff.ppm.
+vflip.jpg was stored.
+EngPlaza.ppm was read.
+shuffle.ppm was saved. 
+0 mismatching pixels (0.000%) identified in shuffle_diff.ppm.
+shuffle.jpg was stored.
+EngPlaza.ppm was read.
+fisheye.ppm was saved. 
+0 mismatching pixels (0.000%) identified in fisheye_diff.ppm.
+fisheye.jpg was stored.
+EngPlaza.ppm was read.
+posterize.ppm was saved. 
+0 mismatching pixels (0.000%) identified in posterize_diff.ppm.
+posterize.jpg was stored.
+EngPlaza.ppm was read.
+rotate.ppm was saved. 
+0 mismatching pixels (0.000%) identified in rotate_diff.ppm.
+rotate.jpg was stored.
+EngPlaza.ppm was read.
+blur.ppm was saved. 
+958 mismatching pixels (0.650%) identified in blur_diff.ppm.
+blur.jpg was stored.
+
+----------------------------
+ 1: Load a PPM image
+ 2: Save an image in PPM and JPEG format
+ 3: Change a color image to Black & White
+ 4: Make a negative of an image
+ 5: Color filter an image
+ 6: Sketch the edge of an image
+ 7: Shuffle an image
+ 8: Flip an image vertically
+ 9: Mirror an image horizontally
+10: Pixelate the image
+11: Create a fisheye image
+12: Posterize an image
+13: Rotate and zoom an image
+14: Motion Blur
+15: Test all functions
+16: Exit
+Please make your choice: 16
+You exit the program.
+]0;maximitt@crystalcove:hw3[maximitt@crystalcove hw3]$ make PhotoLabTest
+make: 'PhotoLabTest' is up to date.
+]0;maximitt@crystalcove:hw3[maximitt@crystalcove hw3]$ ./PhotoLabTest
+EngPlaza.ppm was read.
+negative.ppm was saved. 
+0 mismatching pixels (0.000%) identified in negative_diff.ppm.
+negative.jpg was stored.
+Negative tested!
+
+EngPlaza.ppm was read.
+colorfilter.ppm was saved. 
+0 mismatching pixels (0.000%) identified in colorfilter_diff.ppm.
+colorfilter.jpg was stored.
+Color Filter tested!
+
+EngPlaza.ppm was read.
+edge.ppm was saved. 
+0 mismatching pixels (0.000%) identified in edge_diff.ppm.
+edge.jpg was stored.
+Edge Detection tested!
+
+EngPlaza.ppm was read.
+hmirror.ppm was saved. 
+0 mismatching pixels (0.000%) identified in hmirror_diff.ppm.
+hmirror.jpg was stored.
+HMirror tested!
+
+EngPlaza.ppm was read.
+pixelate.ppm was saved. 
+0 mismatching pixels (0.000%) identified in pixelate_diff.ppm.
+pixelate.jpg was stored.
+Pixelate tested!
+
+EngPlaza.ppm was read.
+bw.ppm was saved. 
+0 mismatching pixels (0.000%) identified in bw_diff.ppm.
+bw.jpg was stored.
+Black & White tested!
+
+EngPlaza.ppm was read.
+vflip.ppm was saved. 
+0 mismatching pixels (0.000%) identified in vflip_diff.ppm.
+vflip.jpg was stored.
+VFlip tested!
+
+EngPlaza.ppm was read.
+shuffle.ppm was saved. 
+0 mismatching pixels (0.000%) identified in shuffle_diff.ppm.
+shuffle.jpg was stored.
+Shuffle tested!
+
+EngPlaza.ppm was read.
+fisheye.ppm was saved. 
+0 mismatching pixels (0.000%) identified in fisheye_diff.ppm.
+fisheye.jpg was stored.
+Fisheye tested!
+
+EngPlaza.ppm was read.
+posterize.ppm was saved. 
+0 mismatching pixels (0.000%) identified in posterize_diff.ppm.
+posterize.jpg was stored.
+Posterize tested!
+
+EngPlaza.ppm was read.
+rotate.ppm was saved. 
+0 mismatching pixels (0.000%) identified in rotate_diff.ppm.
+rotate.jpg was stored.
+Rotate tested!
+
+EngPlaza.ppm was read.
+blur.ppm was saved. 
+959 mismatching pixels (0.650%) identified in blur_diff.ppm.
+blur.jpg was stored.
+MotionBlur tested!
+
+]0;maximitt@crystalcove:hw3[maximitt@crystalcove hw3]$ touch Advanced.c
+]0;maximitt@crystalcove:hw3[maximitt@crystalcove hw3]$ make PhotoLab
+gcc -Wall -std=c11 -c Advanced.c -o Advanced.o
+ar rc libFilter.a DIPs.o Advanced.o
+ranlib libFilter.a
+gcc PhotoLab.o FileIO.o -L. -lFilter -lm -o PhotoLab
+]0;maximitt@crystalcove:hw3[maximitt@crystalcove hw3]$ exit
+exit
+
+Script done on 2025-02-17 18:23:33-08:00
