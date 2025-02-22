@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/User/Desktop/School/Winter25/EECS22/hw3/hw3",
-      "program": "c:/Users/User/Desktop/School/Winter25/EECS22/hw3/hw3/build/Debug/outDebug",
+      "cwd": "c:/Users/User/Desktop/School/Winter25/EECS22/midterm-practice/library/library",
+      "program": "c:/Users/User/Desktop/School/Winter25/EECS22/midterm-practice/library/library/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
