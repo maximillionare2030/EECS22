@@ -36,4 +36,6 @@ Image *Pixelate(Image *image, int block_size);
 /* Shift an image */
 Image *Shift(Image *image, int shiftX, int shiftY);
 
+void assertImage();
+
 #endif /* DIPS_H_INCLUDED_ */

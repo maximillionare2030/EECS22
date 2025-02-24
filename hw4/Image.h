@@ -42,4 +42,13 @@ unsigned int ImageWidth(const Image *image);
 /* Return the image's height in pixels */
 unsigned int ImageHeight(const Image *image);
 
+/* Allocate the memory space for the image structure                  */
+/* and the memory spaces for the color intensity values               */
+/* Return the pointer to thei mage, or NULL in case of error          */
+Image *CreateImage(unsigned int Width, unsigned int Height);
+
+/* Release the memory spaces for the pixel color intensity values     */
+/* Deallocate all the memory spaces for the image                     */
+void DeleteImage(Image *image);
+
 #endif

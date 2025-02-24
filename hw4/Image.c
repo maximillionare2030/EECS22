@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "Image.h"
+#include "Constants.h"
 
 /* Get the R intensity of pixel (x, y) in image */
 unsigned char GetPixelR(const Image *image, unsigned int x, unsigned int y) {
@@ -37,7 +39,7 @@ void SetPixelR(Image *image, unsigned int x, unsigned int y, unsigned char r) {
 /* Set the G intensity of pixel (x, y) in image to g */
 void SetPixelG(Image *image, unsigned int x, unsigned int y, unsigned char g) {
     assert(image != NULL);
-    assert(image->R != NULL);
+    assert(image->G != NULL);
     assert(x < image->W && y < image->H);
     image->G[x + y * image->W] = g;
 }
@@ -45,9 +47,19 @@ void SetPixelG(Image *image, unsigned int x, unsigned int y, unsigned char g) {
 /* Set the B intensity of pixel (x, y) in image to b */
 void SetPixelB(Image *image, unsigned int x, unsigned int y, unsigned char b) {
     assert(image != NULL);
-    assert(image->R != NULL);
+    assert(image->B != NULL);
     assert(x < image->W && y < image->H);
     image->B[x + y * image->W] = b;
+}
+
+/* Return the image's width in pixels */
+unsigned int ImageWidth(const Image *image) {
+    return image->W;
+}
+
+/* Return the image's height in pixels */
+unsigned int ImageHeight(const Image *image) {
+    return image->H;
 }
 
 /* Allocate dynamic memory for the image structure and its R/G/B values */
@@ -62,12 +74,8 @@ Image *CreateImage(unsigned int Width, unsigned int Height) {
     image ->G = malloc(Width * Height * sizeof(unsigned char));
     image ->B = malloc(Width * Height * sizeof(unsigned char));
 
-    if(!image){
-        perror("Image not created."); // Check if image is crated
-        return NULL;
-    }
 
-    assert(image->R != NULL && image->G != NULL && image->B != NULL);
+    //assert(image->R != NULL && image->G != NULL && image->B != NULL);
     return image;
 }
 
@@ -79,12 +87,9 @@ void DeleteImage(Image *image) {
     free(image);
 }
 
-/* Return the image's width in pixels */
-unsigned int ImageWidth(const Image *image) {
-    return image->W;
-}
-
-/* Return the image's height in pixels */
-unsigned int ImageHeight(const Image *image) {
-    return image->H;
+void assertImage(const Image *image) {
+    assert(image != NULL);
+    assert(image->R != NULL);
+    assert(image->G != NULL);
+    assert(image->B != NULL);
 }

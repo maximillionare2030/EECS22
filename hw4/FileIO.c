@@ -8,6 +8,7 @@
 
 #include "Constants.h"
 #include "FileIO.h"
+#include "Image.h"
 
 Image *LoadImage(const char *fname)
 {
@@ -164,3 +165,5 @@ int SaveImage(const char *fname, const Image *image)
 #endif
 	return 0;
 }
+
+

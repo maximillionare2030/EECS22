@@ -1,9 +1,13 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
 #include "Test.h"
 #include "Image.h"
 #include "FileIO.h"
 #include "DIPs.h"
+#include "Constants.h"
 #include "Advanced.h"
+
 
 int AutoTest(void) {
     int result;
@@ -144,7 +148,6 @@ int AutoTest(void) {
 #endif */
     DeleteImage(image);
     image = NULL;
-
     image = LoadImage(fname);
     if (! image) return 35;
     image = Crop(image, CROP_X, CROP_Y, CROP_WIDTH, CROP_HEIGHT);

@@ -10,7 +10,7 @@
 #define MAX_PIXEL 255
 #define MIN_PIXEL 0
 #define SUCCESS 0
-#define EXIT 20
+#define EXIT 18
 
 #define SHUFF_HEIGHT_DIV 4      /* Height division for shuffleing */
 #define SHUFF_WIDTH_DIV 4       /* Width division for shuffleing */
