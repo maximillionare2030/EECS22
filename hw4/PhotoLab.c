@@ -3,6 +3,7 @@
 #include "Test.h"
 #include "DIPs.h"
 #include "FileIO.h"
+#include "Image.h"
 #include "Advanced.h"
 
 /* Menu */
@@ -150,41 +151,26 @@ int main() {
                         scanf("%d", &H);
                         Crop(image, X, Y, W, H);
                         printf("\"Crop\" operation is done!\n");
+                        break;
                     }
-                    /*
-					case 12: {
-						printf("Enter number of posterization bits for R channel (1 to 8): ");
-						scanf("%d", &rbits);
-						printf("Enter number of posterization bits for G channel (1 to 8): ");
-						scanf("%d", &gbits);
-						printf("Enter number of posterization bits for B channel (1 to 8): ");
-						scanf("%d", &bbits);
-						Posterize(R, G, B, rbits, gbits, bbits);
-						printf("\"Posterize\" operation is done!\n");
-						break;
-					}
-					case 13: {
-
-						printf("Enter the angle of rotation: ");
-						scanf("%lf", &Angle);
-						printf("Enter the scale of zooming: ");
-						scanf("%lf", &ScaleFactor);
-						printf("Enter the X-axis coordinate of the center of rotation: ");
-						scanf("%d", &CenterX);
-						printf("Enter the Y-axis coordinate of the center of rotation: ");
-						scanf("%d", &CenterY);
-						Rotate(R, G, B, Angle, ScaleFactor, CenterX, CenterY);
-						printf("\"Rotate\" operation is done!\n");
-						break;
-					}
-					case 14: {
-						printf("Please input blur amount: ");
-						scanf("%d", &BlurAmount);
-						MotionBlur(BlurAmount, R, G, B);
-						printf("\"motion blur\" operation is done!\n");
-						break;
-					}
-                        */
+                    case 14: {
+                        int newWidth, newHeight;
+                        printf("Please input the new image width: ");
+                        scanf("%d", &newWidth);
+                        printf("Please input the new image height: ");
+                        scanf("%d", &newHeight);
+                        Resize(image, newWidth, newHeight);
+                        printf("\"Resize\" operation is done!\n");
+                        break;
+                    }
+                    case 15: {
+                        char watermarkImgName[SLEN] = "watermark_template";
+                        Image *watermark_image = LoadImage(watermarkImgName);
+                        Watermark(image, watermark_image);
+                        DeleteImage(watermark_image);
+                        printf("\"Watermark\" operation is done!\n");
+                        break;
+                    }
 
 					default:
 						printf("Invalid selection!\n");
