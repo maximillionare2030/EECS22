@@ -51,9 +51,9 @@ int main() {
             image = LoadImage(fname);
 		}
 		/* menu item 2 - 10 requires image is loaded first */
-		else if (option >= 2 && option <= 14) {
+		else if (option >= 2 && option <= 16) {
 			if (image == NULL)	 {
-				printf("No image is read.\n");
+				printf("No image to process!\n");
 			}
 			/* now image is loaded */
 			else {
@@ -138,6 +138,19 @@ int main() {
                         Shift(image, shiftX, shiftY);
                         printf("\"Shift\" operation is done!\n");
 					}
+                    case 13: {
+                        int X, Y, W, H;
+                        printf("Enter the X offset value: ");
+                        scanf("%d", &X);
+                        printf("Enter the Y offset value: ");
+                        scanf("%d", &Y);
+                        printf("Please input the crop width: ");
+                        scanf("%d", &W);
+                        printf("Please input the crop height: ");
+                        scanf("%d", &H);
+                        Crop(image, X, Y, W, H);
+                        printf("\"Crop\" operation is done!\n");
+                    }
                     /*
 					case 12: {
 						printf("Enter number of posterization bits for R channel (1 to 8): ");
@@ -183,7 +196,9 @@ int main() {
 		}
 
 		else if (option == 17) {
-			AutoTest();
+			int ATC = AutoTest();
+            if (ATC == 0) printf("AutoTest failed, error code RC.");
+            else printf("AutoTest finished successfully.");
 		}
 		else {
 			printf("Invalid selection!\n");

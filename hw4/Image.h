@@ -51,4 +51,6 @@ Image *CreateImage(unsigned int Width, unsigned int Height);
 /* Deallocate all the memory spaces for the image                     */
 void DeleteImage(Image *image);
 
+void assertImage(const Image *image);
+
 #endif

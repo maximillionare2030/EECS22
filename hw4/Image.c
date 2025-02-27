@@ -6,59 +6,50 @@
 
 /* Get the R intensity of pixel (x, y) in image */
 unsigned char GetPixelR(const Image *image, unsigned int x, unsigned int y) {
-    assert(image != NULL);
-    assert(image->R != NULL);
-    assert(x < image->W && y < image->H);
+    assertImage(image);
+
     return image->R[x + y * image->W];
 }
 
 /* Get the G intensity of pixel (x, y) in image */
 unsigned char GetPixelG(const Image *image, unsigned int x, unsigned int y) {
-    assert(image != NULL);
-    assert(image->G != NULL);
-    assert(x < image->W && y < image->H);
+    assertImage(image);
     return image->G[x + y * image->W];
 }
 
 /* Get the B intensity of pixel (x, y) in image */
 unsigned char GetPixelB(const Image *image, unsigned int x, unsigned int y) {
-    assert(image != NULL);
-    assert(image->B != NULL);
-    assert(x < image->W && y < image->H);
+    assertImage(image);
     return image->B[x + y * image->W];
 }
 
 /* Set the R intensity of pixel (x, y) in image to r */
 void SetPixelR(Image *image, unsigned int x, unsigned int y, unsigned char r) {
-    assert(image != NULL);
-    assert(image->R != NULL);
-    assert(x < image->W && y < image->H);
+    assertImage(image);
     image->R[x + y * image->W] = r;
 }
 
 /* Set the G intensity of pixel (x, y) in image to g */
 void SetPixelG(Image *image, unsigned int x, unsigned int y, unsigned char g) {
-    assert(image != NULL);
-    assert(image->G != NULL);
-    assert(x < image->W && y < image->H);
+    assertImage(image);
     image->G[x + y * image->W] = g;
 }
 
 /* Set the B intensity of pixel (x, y) in image to b */
 void SetPixelB(Image *image, unsigned int x, unsigned int y, unsigned char b) {
-    assert(image != NULL);
-    assert(image->B != NULL);
-    assert(x < image->W && y < image->H);
+    assertImage(image);
     image->B[x + y * image->W] = b;
 }
 
 /* Return the image's width in pixels */
 unsigned int ImageWidth(const Image *image) {
+    assertImage(image);
     return image->W;
 }
 
 /* Return the image's height in pixels */
 unsigned int ImageHeight(const Image *image) {
+    assertImage(image);
     return image->H;
 }
 
@@ -81,6 +72,7 @@ Image *CreateImage(unsigned int Width, unsigned int Height) {
 
 /* Free the memory for the R/G/B values and Image structure */
 void DeleteImage(Image *image) {
+    assertImage(image);
     free(image->R);
     free(image->G);
     free(image->B);
@@ -89,7 +81,4 @@ void DeleteImage(Image *image) {
 
 void assertImage(const Image *image) {
     assert(image != NULL);
-    assert(image->R != NULL);
-    assert(image->G != NULL);
-    assert(image->B != NULL);
 }
