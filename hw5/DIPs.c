@@ -94,12 +94,33 @@ Image *Edge(Image *image) {
 }
 
 /* Add a watermark to an image */
-Image *Watermark(Image *image, const Image *watermark,
-	 unsigned int topLeftX, unsigned int topLeftY)
-{
-	/* to be implemented */
-}
+/* Watermark */
+Image *Watermark(Image *image, const Image *watermark_image) {
+    assertImage(image);
 
+    Image *newImage = CreateImage(image->W, image->H);
+
+    // Copy original image + watermark to new image
+    for (int j = 0; j < image->H; j++) {
+        for (int i = 0; i < image->W; i++) {
+            int x = i % watermark_image->W;
+            int y = j % watermark_image->H;
+
+            // Apply Watermark transformation if pixel is black
+            if ((GetPixelR(watermark_image, x, y) == 0) && (GetPixelG(watermark_image, x ,y ) == 0) && GetPixelB(watermark_image, x ,y) == 0) {
+                // Alter pixel RGB values, default to 255 if over
+                SetPixelR(newImage, i, j, fmin(GetPixelR(image, i, j) * 1.45, 255));
+                SetPixelG(newImage, i, j, fmin(GetPixelG(image, i, j) * 1.45, 255));
+                SetPixelB(newImage, i, j, fmin(GetPixelB(image, i, j) * 1.45, 255));
+            } else {
+                // Copy original pixel values
+                SetPixelR(newImage, i, j, GetPixelR(image, i, j));
+                SetPixelG(newImage, i, j, GetPixelG(image, i, j));
+                SetPixelB(newImage, i, j, GetPixelB(image, i, j));
+            }
+        }
+    }
+}
 /* Spotlight */
 Image *Spotlight(Image *image, int centerX, int centerY, unsigned int radius)
 {
