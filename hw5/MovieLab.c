@@ -39,10 +39,13 @@ int main(int argc, char *argv[])
 	int x = 0;
 	char *fin = NULL;
 	char *fout = NULL;
-	
+
+	Movie *movie = NULL;
+
+	unsigned int frameNum = 0;
 	unsigned int width = 512;
 	unsigned int height = 288;
-	
+
 	/* the while loop to check options in the command line */
 	while (x < argc) {
 		/* the input file name */
@@ -71,13 +74,144 @@ int main(int argc, char *argv[])
 			continue;
 		} /*fi*/
 
+		/* Number of frames*/
+		if (strcmp(argv[x], "-f") == 0) {
+			if (x < argc - 1) {
+				if (sscanf(argv[x+1], "%u", &frameNum) == 0) {
+				}
+			} /*fi*/
+			else {
+				printf("Missing argument for the number of frames to load!\n");
+				return 5;
+			} /*esle*/
+			x += 2;
+			continue;
+		} /*fi*/
+
+		/* the image dimensions option */
+		if (strcmp(argv[x], "-s") == 0) {
+			if (x < argc - 1) {
+				if (sscanf(argv[x+1], "%ux%u", &width, &height) == 2) {
+				}
+			} /*fi*/
+			else {
+				printf("Missing argument for image dimensions!\n");
+				return 5;
+			} /*esle*/
+			x += 2;
+			continue;
+		} /*fi*/
+
 		/* the help option */
 		if (strcmp(argv[x], "-h") == 0) {
 			PrintUsage();
 			return 0;
 		} /*fi*/
 
-		/* to be implemented */
+		if (strcmp(argv[x], "-bw") == 0) {
+			if (!movie) {
+				movie = LoadMovie(fin, frameNum, width, height);
+			}
+
+			YUV2RGBMovie(movie);
+			IENTRY *curr, *next;
+			ILIST *frames = movie->Frames;
+			curr = frames-> First;
+			while(curr) {
+				next = curr->Next;
+				BlackNWhite(curr->Image);
+				curr = next;
+			}
+			RGB2YUVMovie(movie);
+			x++;
+			printf("\nOperation Black and White is done!\n");
+			continue;
+		}
+		if (strcmp(argv[x], "-hmirror") == 0) {
+			if (!movie) {
+				movie = LoadMovie(fin, frameNum, width, height);
+			}
+
+			YUV2RGBMovie(movie);
+			IENTRY *curr, *next;
+			ILIST *frames = movie->Frames;
+			curr = frames-> First;
+			while(curr) {
+				next = curr->Next;
+				HMirror(curr->Image);
+				curr = next;
+			}
+			RGB2YUVMovie(movie);
+			printf("\nOperation HMirror is done!\n");
+			x++;
+			continue;
+		}
+
+		if (strcmp(argv[x], "-edge") == 0) {
+			if (!movie) {
+				movie = LoadMovie(fin, frameNum, width, height);
+			}
+
+			YUV2RGBMovie(movie);
+			IENTRY *curr, *next;
+			ILIST *frames = movie->Frames;
+			curr = frames-> First;
+			while(curr) {
+				next = curr->Next;
+				Edge(curr->Image);
+				curr = next;
+			}
+			RGB2YUVMovie(movie);
+			printf("\nOperation Edge is done!\n");
+			x++;
+			continue;
+		}
+		if (strcmp(argv[x], "-crop") == 0) {
+			unsigned int start, end, newFNum;
+			if (!movie) {
+				movie = LoadMovie(fin, frameNum, width, height);
+			}
+			if (x < argc - 1) {
+				if (sscanf(argv[x + 1], "%u-%u", &start, &end) == 2) {
+					newFNum = (end - start) + 1;
+					CropImageList(movie->Frames, start, end);
+					printf("Operation Crop is done! New number of frames is %u.\n", newFNum);
+				}
+			} else {
+				printf("Missing argument for start and end!\n");
+				return 5;
+			}
+			x += 2;
+			continue;
+		}
+
+		/* Fast Forward */
+		if (strcmp(argv[x], "-fast") == 0) {
+			if (!movie) movie = LoadMovie(fin, frameNum, width, height);
+			if (x + 1 >= argc) {
+				printf("Missing argument for -fast!\n");
+				return 5;
+			}
+			unsigned int factor;
+			if (sscanf(argv[x + 1], "%u", &factor) != 1 || factor < 1) {
+				printf("Invalid argument for -fast!\n");
+				return 5;
+			}
+			FastImageList(movie->Frames, factor);
+			frameNum /= factor; // Update frame count
+			printf("Operation Fast Forward is done! New number of frames is %u", frameNum);
+			x += 2; // Skip "-fast" and its argument
+			continue;
+		}
+
+		if (strcmp(argv[x], "-reverse") == 0) {
+			if (!movie) {
+				movie = LoadMovie(fin, frameNum, width, height);
+			}
+			ReverseImageList(movie->Frames);
+			x++;
+			continue;
+		}
 
 		x++;
 	} /*elihw*/
@@ -94,12 +228,26 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 
-		/* to be implemented */
+	// Load movie and Convert back to YUV
+    if (!movie) {
+        printf("Failed to load movie!\n");
+        return 1;
+    }
 
-	fin = NULL;
-	fout = NULL;
+    // Save the movie
+    if (SaveMovie(fout, movie)) {
+        printf("Failed to save movie!\n");
+        DeleteMovie(movie);
+        return 1;
+    }
 
-	return 0;
+    // Clean up
+    DeleteMovie(movie);
+
+    fin = NULL;
+    fout = NULL;
+
+    return 0;
 }
 
 void PrintUsage()
@@ -188,7 +336,22 @@ YUVImage* LoadOneFrame(const char* fname, int n,
 Movie *LoadMovie(const char *fname, int frameNum,
 	unsigned int width, unsigned height)
 {
-	/* to be implemented */
+	Movie *movie = CreateMovie();
+
+	if (!movie) {
+		return NULL;
+	}
+
+	for (int i = 0; i < frameNum; i++) {
+		YUVImage *frame = LoadOneFrame(fname, i, width, height);
+		if(!frame) {
+			DeleteMovie(movie);
+			return NULL;
+		}
+		AppendYUVImage(movie->Frames,frame);
+	}
+	printf("The movie file %s has been read successfully!\n", fname);
+	return movie;
 }
 
 /* Save the movie frames to the output file */
@@ -208,7 +371,7 @@ int SaveMovie(const char *fname, Movie *movie)
 	curr = movie->Frames->First;
 	while (curr != NULL) {
 
-		SaveOneFrame(curr->image, fname, file);
+		SaveOneFrame(curr->Image, fname, file);
 		curr = curr->Next;
 		count++;
 	}

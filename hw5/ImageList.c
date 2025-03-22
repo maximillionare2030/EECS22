@@ -8,6 +8,37 @@
 #include "ImageList.h"
 #include "Image.h"
 
+IENTRY *CreateImageEntry() {
+    IENTRY *entry = (IENTRY *)malloc(sizeof(IENTRY));
+    assert(entry);
+    entry->Image = NULL;
+    entry->Next = NULL;
+    entry->Prev = NULL;
+    entry->List = NULL;
+    return entry;
+
+}
+
+void DeleteImageEntry(IENTRY *entry) {
+    assert(entry);
+
+    if (entry->Image) {
+        // Use the appropriate deletion function
+        if (entry->List && entry->List->First && entry->List->First->Image) {
+            if (entry->List->First->Image == entry->Image) {
+                // Assume it's an RGB image
+                DeleteImage((Image *)entry->Image);
+            } else {
+                // Assume it's a YUV image
+                DeleteYUVImage((YUVImage *)entry->Image);
+            }
+        }
+    }
+
+    free(entry);
+}
+
+
 /* Create a new image list */
 ILIST *CreateImageList(void)
 {
@@ -31,9 +62,11 @@ void DeleteImageList(ILIST *list)
     IENTRY *entry = list -> First;
     while (entry != NULL) {
         IENTRY *next = entry -> Next;
-        free(entry);
+        DeleteImageEntry(entry);
         entry = next;
     }
+
+    free(list);
 
 	/* to be implemented */
 }
@@ -42,48 +75,182 @@ void DeleteImageList(ILIST *list)
 void AppendRGBImage(ILIST *list, Image *RGBimage)
 {
     assert(list);
-    asset(RGBimage);
+    assert(RGBimage);
 
-    IENTRY *entry = (IENTRY *)(malloc(sizeof(IENTRY)));
-    entry -> List = list;
-    entry -> Next = NULL;
-    entry -> Prev = list -> Last;
+    IENTRY *entry = CreateImageEntry();
     entry -> Image = RGBimage;
-
-    list -> Last -> Next = entry;
-    list -> Last = entry;
-
-	/* to be implemented */
+    if (list -> Length == 0) {
+        list -> First = entry;
+        list -> Last = entry;
+        list -> Length = 1;
+    }
+    else {
+        entry -> List = list;
+        entry -> Prev = list -> Last;
+        list -> Last -> Next = entry;
+        list -> Last = entry;
+        list -> Length += 1;
+    }
 }
 
 /* Insert a YUV image to the image list at the end */
 void AppendYUVImage(ILIST *list, YUVImage *YUVimage)
 {
-	/* to be implemented */
+	assert(list);
+    assert(YUVimage);
+
+    IENTRY *entry = CreateImageEntry();
+    entry -> Image = YUVimage;
+    if (list -> Length == 0) {
+        list -> First = entry;
+        list -> Last = entry;
+        list -> Length = 1;
+    }
+    else {
+        entry -> List = list;
+        entry -> Prev = list -> Last;
+        list -> Last -> Next = entry;
+        list -> Last = entry;
+        list -> Length += 1;
+    }
 }
 
+
 /* Crop an image list */
-void CropImageList(ILIST *list, unsigned int start, unsigned int end)
-{
-	/* to be implemented */
+void CropImageList(ILIST *list, unsigned int start, unsigned int end) {
+    if (!list || start >= end || end > list->Length) {
+        return; // Invalid range or list
+    }
+
+    IENTRY *entry = list->First;
+    unsigned int index = 0;
+
+    // Delete entries before `start`
+    while (index < start && entry != NULL) {
+        IENTRY *next = entry->Next;
+        DeleteImageEntry(entry);
+        entry = next;
+        list->Length--;
+        index++;
+    }
+
+    // Update the First pointer
+    list->First = entry;
+    if (list->First) {
+        list->First->Prev = NULL;
+    }
+
+    // Move to `end`
+    while (index < end && entry != NULL) {
+        entry = entry->Next;
+        index++;
+    }
+
+    // Delete entries after `end`
+    if (entry) {
+        IENTRY *tail = entry->Next;
+        while (tail != NULL) {
+            IENTRY *next = tail->Next;
+            DeleteImageEntry(tail);
+            tail = next;
+            list->Length--;
+        }
+        entry->Next = NULL; // Terminate the list at `end`
+    }
+
+    // Update the Last pointer
+    list->Last = entry;
+    if (list->Last) {
+        list->Last->Next = NULL;
+    }
 }
 
 /* Fast forward an image list */
 void FastImageList(ILIST *list, unsigned int factor)
 {
-	/* to be implemented */
+    assert(list);
+    if (factor <= 1 || list->Length == 0) {
+        return; // Do nothing if factor is invalid
+    }
+
+    unsigned int count = 0;
+    IENTRY *entry = list->First;
+    IENTRY *prev = NULL;
+
+    while (entry != NULL) {
+        IENTRY *next = entry->Next;
+
+        if (count % factor != 0) {
+            // Remove the current entry
+            if (prev) {
+                prev->Next = next;
+            } else {
+                list->First = next; // Update head
+            }
+
+            if (next) {
+                next->Prev = prev;
+            } else {
+                list->Last = prev; // Update tail
+            }
+
+            DeleteImageEntry(entry);
+            list->Length--;
+        } else {
+            prev = entry; // Move prev pointer forward
+        }
+
+        entry = next;
+        count++; // Tracker of ith frame
+    }
 }
 
-/* Reverse an image list */
+//* Reverse an Image List */
 void ReverseImageList(ILIST *list)
 {
-	/* to be implemented */
+    assert(list);
+    if (list->Length <= 1) {
+        return; // No need to reverse if 0 or 1 element
+    }
+
+    IENTRY *current = list->First;
+    IENTRY *temp = NULL;
+
+    // Swap `Next` and `Prev` for each node
+    while (current != NULL) {
+        temp = current->Prev;
+        current->Prev = current->Next;
+        current->Next = temp;
+        current = current->Prev; // Move to the next node (was previously `Next`)
+    }
+
+    // Swap first and last pointers
+    temp = list->First;
+    list->First = list->Last;
+    list->Last = temp;
 }
+
 
 /* Insert a RGB image to the image list in the front */
 void PrependRGBImage(ILIST *list, Image *RGBimage)
 {
-	/* to be implemented */
+    assert(list);
+    assert(RGBimage);
+
+    IENTRY *entry = CreateImageEntry();
+    entry->Image = RGBimage;
+    entry->List = list;
+
+    if (list->Length == 0) {
+        list->First = entry;
+        list->Last = entry;
+    } else {
+        entry->Next = list->First;
+        list->First->Prev = entry;
+        list->First = entry;
+    }
+
+    list->Length += 1;
 }
 
 

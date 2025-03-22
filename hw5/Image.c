@@ -8,6 +8,8 @@
 #include <string.h>
 #include "Image.h"
 
+
+
 /* Get the intensity value of the Red channel of pixel (x, y) */
 /* in the RGB image */
 unsigned char GetPixelR(const Image *image, unsigned int x, unsigned int y)
