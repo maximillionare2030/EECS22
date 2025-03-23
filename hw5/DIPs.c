@@ -93,43 +93,112 @@ Image *Edge(Image *image) {
 	return image;
 }
 
-/* Add a watermark to an image */
-/* Watermark */
-Image *Watermark(Image *image, const Image *watermark_image) {
-    assertImage(image);
+Image *Watermark(Image *image, const Image *watermark_image, unsigned int topLeftX, unsigned int topLeftY) {
+    assert(image);
+    assert(watermark_image);
 
+    // Create a new image to store the result
     Image *newImage = CreateImage(image->W, image->H);
+    if (!newImage) {
+        return NULL;
+    }
 
-    // Copy original image + watermark to new image
-    for (int j = 0; j < image->H; j++) {
-        for (int i = 0; i < image->W; i++) {
-            int x = i % watermark_image->W;
-            int y = j % watermark_image->H;
+    // Copy the original image to the new image
+    for (unsigned int y = 0; y < image->H; y++) {
+        for (unsigned int x = 0; x < image->W; x++) {
+            SetPixelR(newImage, x, y, GetPixelR(image, x, y));
+            SetPixelG(newImage, x, y, GetPixelG(image, x, y));
+            SetPixelB(newImage, x, y, GetPixelB(image, x, y));
+        }
+    }
 
-            // Apply Watermark transformation if pixel is black
-            if ((GetPixelR(watermark_image, x, y) == 0) && (GetPixelG(watermark_image, x ,y ) == 0) && GetPixelB(watermark_image, x ,y) == 0) {
-                // Alter pixel RGB values, default to 255 if over
-                SetPixelR(newImage, i, j, fmin(GetPixelR(image, i, j) * 1.45, 255));
-                SetPixelG(newImage, i, j, fmin(GetPixelG(image, i, j) * 1.45, 255));
-                SetPixelB(newImage, i, j, fmin(GetPixelB(image, i, j) * 1.45, 255));
-            } else {
-                // Copy original pixel values
-                SetPixelR(newImage, i, j, GetPixelR(image, i, j));
-                SetPixelG(newImage, i, j, GetPixelG(image, i, j));
-                SetPixelB(newImage, i, j, GetPixelB(image, i, j));
+    // Overlay the watermark
+    for (unsigned int wy = 0; wy < watermark_image->H; wy++) {
+        for (unsigned int wx = 0; wx < watermark_image->W; wx++) {
+            unsigned int imageX = topLeftX + wx;
+            unsigned int imageY = topLeftY + wy;
+
+            // Check if the watermark pixel is within the frame
+            if (imageX < image->W && imageY < image->H) {
+                // Apply watermark transformation if the watermark pixel is black
+                if (GetPixelR(watermark_image, wx, wy) == 0 &&
+                    GetPixelG(watermark_image, wx, wy) == 0 &&
+                    GetPixelB(watermark_image, wx, wy) == 0) {
+                    // Alter pixel RGB values, default to 255 if over
+                    SetPixelR(newImage, imageX, imageY, fmin(GetPixelR(image, imageX, imageY) * 1.45, 255));
+                    SetPixelG(newImage, imageX, imageY, fmin(GetPixelG(image, imageX, imageY) * 1.45, 255));
+                    SetPixelB(newImage, imageX, imageY, fmin(GetPixelB(image, imageX, imageY) * 1.45, 255));
+                }
             }
         }
     }
+
+    return newImage;
 }
 /* Spotlight */
 Image *Spotlight(Image *image, int centerX, int centerY, unsigned int radius)
 {
-	/* to be implemented */
+    // Calculate the squared radius to avoid using sqrt in the loop
+    unsigned int radius_squared = radius * radius;
+
+    // Iterate over all pixels in the image
+    for (int x = 0; x < image->W; x++) {
+        for (int y = 0; y < image->H; y++) {
+            // Calculate the squared distance from the center
+            int dx = centerX - x;
+            int dy = centerY - y;
+            unsigned int distance_squared = dx * dx + dy * dy;
+
+            // If the pixel is outside the circle, set it to black
+            if (distance_squared > radius_squared) {
+                SetPixelR(image, x, y, 0);
+                SetPixelG(image, x, y, 0);
+                SetPixelB(image, x, y, 0);
+            }
+        }
+    }
+
+    return image;
 }
 
-/* Rotate and zoom an image */
-Image *Rotate(Image *image, double Angle, double ScaleFactor)
-{
-	/* to be implemented */
+Image *Rotate(Image *image, double Angle, double ScaleFactor) {
+    // Create a new image of the same size as the original
+    Image *newImg = CreateImage(image->W, image->H);
+    if (!newImg) return NULL;
+
+    double radians = Angle * (3.1415) / 180.0;
+    double cos_theta = cos(radians);
+    double sin_theta = sin(radians);
+
+    int cx = image->W / 2;  // Center X
+    int cy = image->H / 2;  // Center Y
+
+    for (int y = 0; y < newImg->H; y++) {
+        for (int x = 0; x < newImg->W; x++) {
+            // Translate to center of destination image
+            double x1 = (double)x - cx;
+            double y1 = (double)y - cy;
+
+            // Apply inverse rotation and scaling
+            double x_rot = (x1 * cos_theta + y1 * sin_theta) / ScaleFactor;
+            double y_rot = (-x1 * sin_theta + y1 * cos_theta) / ScaleFactor;
+
+            // Translate back to source coordinates
+            int src_x = (int)round(x_rot + cx);
+            int src_y = (int)round(y_rot + cy);
+
+            // Check bounds and set pixel
+            if (src_x >= 0 && src_x < image->W && src_y >= 0 && src_y < image->H) {
+                SetPixelR(newImg, x, y, GetPixelR(image, src_x, src_y));
+                SetPixelG(newImg, x, y, GetPixelG(image, src_x, src_y));
+                SetPixelB(newImg, x, y, GetPixelB(image, src_x, src_y));
+            } else {
+                SetPixelR(newImg, x, y, 0);
+                SetPixelG(newImg, x, y, 0);
+                SetPixelB(newImg, x, y, 0);
+            }
+        }
+    }
+
+    return newImg;
 }
-/* EOF */
